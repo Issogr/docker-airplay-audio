@@ -1,0 +1,14 @@
+version: '3'
+services:
+  airport:
+    image: kexkey/shairport-sync-rpi
+    restart: always
+    network_mode: host
+#    volumes:
+#      - "/path/to/custom/shairport-sync.conf:/etc/shairport-sync.conf"
+    devices:
+      - /dev/snd
+    environment:
+      - AIRPLAY_NAME=audiobureau
+      - PGID=1000
+      - PUID=1000

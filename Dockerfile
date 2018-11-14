@@ -1,7 +1,5 @@
-FROM resin/armhf-alpine:latest AS builder
+FROM alpine:3.8 AS builder
 MAINTAINER orbsmiv@hotmail.com
-
-RUN [ "cross-build-start" ]
 
 ARG SHAIRPORT_VER=development
 
@@ -38,12 +36,9 @@ RUN autoreconf -i -f \
         && make \
         && make install
 
-RUN [ "cross-build-end" ]
+##############################################
 
-
-FROM resin/armhf-alpine:latest
-
-RUN [ "cross-build-start" ]
+FROM alpine:3.8
 
 RUN apk add --no-cache \
         dbus \
@@ -62,10 +57,10 @@ RUN apk add --no-cache \
 COPY --from=builder /etc/shairport-sync* /etc/
 COPY --from=builder /usr/local/bin/shairport-sync /usr/local/bin/shairport-sync
 
+RUN sed -i -re '/volume_range_db/ s/\/\/(.*)= ../\1= 40/' /etc/shairport-sync.conf
+
 COPY start.sh /start
 
 ENV AIRPLAY_NAME Docker
 
 ENTRYPOINT [ "/start" ]
-
-RUN [ "cross-build-end" ]
